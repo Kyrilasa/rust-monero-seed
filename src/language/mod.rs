@@ -42,8 +42,9 @@ mod tests {
 	fn words_by_prefix() {
 		let lang = Language::English;
 
-		let res = lang.words_by_prefix("woo");
-		assert_eq!(res, ["woozy"]);
+		let res = lang.find_word("abbey");
+
+		println!("Hello, {:?}!", res.unwrap());
 
 		let res = lang.words_by_prefix("");
 		assert_eq!(res.len(), 1626);
