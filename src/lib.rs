@@ -1,21 +1,25 @@
 mod electrum;
 mod language;
-
+//TODO checksum
 pub fn words_to_bytes(words: &[&str]) -> usize {
-    use bip39::{Mnemonic, MnemonicType, Language};
-    let word_idx_array = get_word_idx_array(words);
+    let language = language::Language::find_language_from_word_seed(words);
+    if language.is_none() {
+        println!("Can not find matching language!");
+        1
+    } else {
+        let word_idx_array = get_word_idx_array(words, language.unwrap());
+        println!("Joined, {}", words.join(""));
+        let hex_seed = generate_private_key_from_word_idx_array(&word_idx_array);
+        println!("Hello, {:?}!", hex_seed);
+        1
 
-    println!("Joined, {}", words.join(""));
-    let hex_seed = generate_private_key_from_word_idx_array(&word_idx_array);
-    println!("Hello, {:?}!", hex_seed);
-    1
+    }
 }
 
-pub fn get_word_idx_array(words: &[&str]) -> Vec<u32> {
-    let lang = language::Language::English;
+pub fn get_word_idx_array(words: &[&str], language: language::Language) -> Vec<u32> {
     let mut word_idx_vec:Vec<u32> = Vec::new();
     for word in words {
-        let word_idx = lang.find_word(word);
+        let word_idx = language.get_word_idx(word);
         if word_idx.is_some() {
             word_idx_vec.push(u32::from(word_idx.unwrap()))
         } 
@@ -51,9 +55,9 @@ mod tests {
 
     #[test]
     fn word_idx_test() {
-        let result = get_word_idx_array(&["because", "decay", "vacation", "gigantic", "nail", "binocular", "mittens", "pipeline", "tweezers", "refer", "teardrop", "ecstatic", "kiwi", "pawnshop", "highway", "enlist", "enhanced", "tinted", "biweekly", "pimple", "orphans", "tipsy", "seasons", "sidekick"]);
+        let result = get_word_idx_array(&["because", "decay", "vacation", "gigantic", "nail", "binocular", "mittens", "pipeline", "tweezers", "refer", "teardrop", "ecstatic", "kiwi", "pawnshop", "highway", "enlist", "enhanced", "tinted", "biweekly", "pimple", "orphans", "tipsy", "seasons", "sidekick"], language::Language::English);
         assert_eq!(result, vec![155, 299, 1498, 546, 906, 177, 872, 1072, 1437, 1148, 1364, 381, 758, 1044, 612, 413, 410, 1390, 183, 1069, 1011, 1391, 1232, 1257]);
-        let result = get_word_idx_array(&["buffet", "abnormal", "baptism", "opened", "putty", "tribal", "inbound", "video", "ajar", "until", "arrow", "axis", "evolved", "bemused", "rising", "gorilla", "gown", "ablaze", "snake", "purged", "southern", "demonstrate", "perfect", "poaching", "baptism"]);
+        let result = get_word_idx_array(&["buffet", "abnormal", "baptism", "opened", "putty", "tribal", "inbound", "video", "ajar", "until", "arrow", "axis", "evolved", "bemused", "rising", "gorilla", "gown", "ablaze", "snake", "purged", "southern", "demonstrate", "perfect", "poaching", "baptism"], language::Language::English);
         assert_eq!(result, vec![207, 4, 150, 1000, 1118, 1417, 665, 1523, 49, 1467, 103, 136, 437, 162, 1177, 567, 572, 3, 1284, 1116, 1302, 308, 1056, 1085, 150]);
     }
     

@@ -29,8 +29,21 @@ impl Language {
 	}
 
     #[inline]
-	pub fn find_word(self, word: &str) -> Option<u16> {
+	pub fn get_word_idx(self, word: &str) -> Option<u16> {
 		self.word_list().iter().position(|w| *w == word).map(|i| i as u16)
+	}
+
+	pub fn find_language_from_word_seed(words: &[&str]) -> Option<Language> {
+		let _languages: Vec<Language> = vec![Language::English];
+
+		for language in _languages {
+			//n^2
+			let _full_match = words.iter().all(|item| language.word_list().contains(item));
+			if _full_match {
+				return Some(language);
+			}
+		}
+		None
 	}
 }
 
@@ -42,7 +55,7 @@ mod tests {
 	fn words_by_prefix() {
 		let lang = Language::English;
 
-		let res = lang.find_word("abbey");
+		let res = lang.get_word_idx("abbey");
 
 		println!("Hello, {:?}!", res.unwrap());
 
@@ -51,5 +64,12 @@ mod tests {
 
 		let res = lang.words_by_prefix("woof");
 		assert!(res.is_empty());
+	}
+    #[test]
+	fn find_language() {
+		let lang = Language::find_language_from_word_seed(&["because", "decay", "vacation", "gigantic", "nail", "binocular", "mittens", "pipeline", "tweezers", "refer", "teardrop", "ecstatic", "kiwi", "pawnshop", "highway", "enlist", "enhanced", "tinted", "biweekly", "pimple", "orphans", "tipsy", "seasons", "sidekick"]);
+		assert_eq!(lang, Some(Language::English));
+		let lang = Language::find_language_from_word_seed(&["beasdcause", "decay", "vacation", "gigantic", "nail", "binocular", "mittens", "pipeline", "tweezers", "refer", "teardrop", "ecstatic", "kiwi", "pawnshop", "highway", "enlist", "enhanced", "tinted", "biweekly", "pimple", "orphans", "tipsy", "seasons", "sidekick"]);
+		assert_eq!(lang, None);
 	}
 }
