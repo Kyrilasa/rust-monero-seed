@@ -1,12 +1,53 @@
 mod electrum;
 mod language;
 //TODO checksum
+pub fn checksum_test(words: &[&str], language: language::Language) -> bool {
+    let last_word = words.last();
+    
+    //TODO get unique prefix length
+    let unique_prefix_length = 3;
+
+    true
+}
+
+
+//TODO
+pub fn create_checksum_idx(words: &[&str], language: language::Language) -> u32 {
+    1
+}
+
 pub fn words_to_bytes(words: &[&str]) -> usize {
+    /// precheck begin
+    if words.len() % 4 != 0
+    {
+        //TODO error handling
+        println!("Invalid seed: not a multiple of 4");
+    }
+
+
+    let expected = words.len() * 8 * 3 / 32;
+    let mut has_checksum = true;
+    
+    if words.len() != expected/2 && words.len() != expected &&
+      words.len() != expected + 1
+    {
+        //TODO error handling
+        println!("Invalid seed: not a multiple of 4");
+    }
+
+    has_checksum = words.len() == (expected + 1);
+
+    /// precheck end
+
+
+
     let language = language::Language::find_language_from_word_seed(words);
     if language.is_none() {
         println!("Can not find matching language!");
         1
     } else {
+
+
         let word_idx_array = get_word_idx_array(words, language.unwrap());
         println!("Joined, {}", words.join(""));
         let hex_seed = generate_private_key_from_word_idx_array(&word_idx_array);
@@ -14,6 +55,11 @@ pub fn words_to_bytes(words: &[&str]) -> usize {
         1
 
     }
+}
+
+//TODO
+pub fn bytes_to_words(hex_seed: String) -> bool {
+    false
 }
 
 pub fn get_word_idx_array(words: &[&str], language: language::Language) -> Vec<u32> {
@@ -28,6 +74,18 @@ pub fn get_word_idx_array(words: &[&str], language: language::Language) -> Vec<u
 }
 
 pub fn generate_private_key_from_word_idx_array(word_idx_array: &Vec<u32>) -> String {
+    //TODO checksum
+    if true
+    {
+    //   if (!checksum_test(seed, language))
+    //   {
+    //     // Checksum fail
+    //     MERROR("Invalid seed: invalid checksum");
+    //     return false;
+    //   }
+    //   seed.pop_back();
+    }
+
     let word_list_length = 1626;
     let mut hex_seed = "".to_string();
     for i in 0..word_idx_array.len() / 3 {
@@ -45,6 +103,8 @@ pub fn generate_private_key_from_word_idx_array(word_idx_array: &Vec<u32>) -> St
         hex_seed.push_str(hex_triplet_sum);
 
     }
+
+    // TODO 12 word hex construction
     hex_seed
 }
 
